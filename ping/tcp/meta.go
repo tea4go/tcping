@@ -18,15 +18,15 @@ type Meta struct {
 
 func (m Meta) String() string {
 	return fmt.Sprintf(
-		"serverName=%s version=%d notBefore=%s notAfter=%s dnsNames=%s",
+		"server_name=%s version=%d dns_names=%s (%s~%s)",
 		m.serverName,
 		m.version,
+		strings.Join(m.dnsNames, ","),
 		formatTime(m.notBefore),
 		formatTime(m.notAfter),
-		strings.Join(m.dnsNames, ","),
 	)
 }
 
 func formatTime(t time.Time) string {
-	return t.Format(time.RFC3339)
+	return t.Format("2006-01-02")
 }

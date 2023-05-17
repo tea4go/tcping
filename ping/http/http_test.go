@@ -2,13 +2,14 @@ package http_test
 
 import (
 	"context"
+	"testing"
+
 	tcping "github.com/cloverstd/tcping/ping"
 	"github.com/cloverstd/tcping/ping/http"
-	"testing"
 )
 
 func TestPing(t *testing.T) {
-	ping, err := http.New("GET", "http://www.google.com/generate_204", &tcping.Option{}, false)
+	ping, err := http.New("GET", "https://ssodr.iwhalecloud.com:40083/login/", &tcping.Option{}, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +25,7 @@ func TestPing(t *testing.T) {
 }
 
 func TestPingHTTPS(t *testing.T) {
-	ping, err := http.New("GET", "https://www.google.com/generate_204", &tcping.Option{}, false)
+	ping, err := http.New("GET", "https://ssodr1.iwhalecloud.com:40083/login/", &tcping.Option{}, false)
 	if err != nil {
 		t.Fatal(err)
 	}

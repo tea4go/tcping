@@ -5,10 +5,11 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/cloverstd/tcping/ping"
 	"net"
 	"net/http/httptrace"
 	"time"
+
+	"github.com/cloverstd/tcping/ping"
 )
 
 var _ ping.Ping = (*Ping)(nil)
@@ -92,7 +93,7 @@ func (p *Ping) Ping(ctx context.Context) *ping.Stats {
 				notAfter:   state.PeerCertificates[0].NotAfter,
 			}
 		} else if p.tls {
-			stats.Extra = bytes.NewBufferString(fmt.Sprintf("TLS handshake failed, %s", tlsErr))
+			stats.Extra = bytes.NewBufferString(fmt.Sprintf("TLS 握手失败, %s", tlsErr))
 		}
 	}
 	return &stats

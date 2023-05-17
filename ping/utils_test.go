@@ -8,7 +8,7 @@ import (
 
 func TestFormatIP(t *testing.T) {
 
-	Convey("IP", t, func() {
+	Convey("IP地址测试", t, func() {
 		Convey("for v4 success", func() {
 			rc, _ := FormatIP("192.168.0.1")
 			So(rc, ShouldEqual, "192.168.0.1")
@@ -19,7 +19,7 @@ func TestFormatIP(t *testing.T) {
 			So(rc, ShouldEqual, "")
 		})
 
-		Convey("for v4 format", func() {
+		Convey("for v4 format ", func() {
 			rc, _ := FormatIP("[192.0.1.1] ")
 			So(rc, ShouldEqual, "192.0.1.1")
 		})

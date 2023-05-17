@@ -19,7 +19,7 @@ func New(method string, url string, op *ping.Option, trace bool) (*Ping, error) 
 
 	_, err := http.NewRequest(method, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("url or method is invalid, %w", err)
+		return nil, fmt.Errorf("网址或方法无效, %w", err)
 	}
 
 	if method == "" {
@@ -104,7 +104,7 @@ func (p *Ping) Ping(ctx context.Context) *ping.Stats {
 		stats.Duration = time.Since(start)
 		if err != nil {
 			stats.Connected = false
-			stats.Error = fmt.Errorf("read body failed, %w", err)
+			stats.Error = fmt.Errorf("读取Http返回包失败， %w", err)
 		}
 	}
 	return &stats
