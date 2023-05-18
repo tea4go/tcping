@@ -38,14 +38,13 @@ var rootCmd = cobra.Command{
   1. 通过 TCP ping
 	> tcping google.com
   2. 使用自定义端口通过 TCP ping
-	> tcping google.com 443
+	> tcping --tls 10.45.52.153 40083
   3. 通过 Http ping
   	> tcping http://google.com
   4. 通过 Https ping
   	> tcping https://cn.bing.com/
   5. 通过代理 Http ping
   	> tcping --proxy http://192.168.3.8:32121 http://google.com
-
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if showVersion {
