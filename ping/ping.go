@@ -10,11 +10,9 @@ import (
 	"math"
 	"net"
 	"net/url"
-	"os"
 	"sort"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -211,108 +209,6 @@ Approximate trip times:
 	_, _ = fmt.Fprintf(p.out, tpl, p.url.String(), p.total, p.total-p.failedTotal, p.failedTotal, p.minDuration, p.maxDuration, p.totalDuration/time.Duration(p.total))
 }
 
-func (p *Pinger) formatError(err error) string {
-	//fmt.Println("===>", err.Error())
-	switch err := err.(type) {
-	case *url.Error:
-		if err.Timeout() {
-			return "超时"
-		}
-		return p.formatError(err.Err)
-	case net.Error:
-		if err.Timeout() {
-			return "超时"
-		}
-		if oe, ok := err.(*net.OpError); ok {
-			switch err := oe.Err.(type) {
-			case *os.SyscallError:
-				return p.formatError(err.Err)
-			}
-		}
-	default:
-		if errors.Is(err, context.DeadlineExceeded) {
-			return "超时"
-		}
-	}
-
-	if err == io.EOF {
-		return "网络主动断开"
-	}
-
-	netErr, ok := err.(net.Error)
-	if ok {
-		if netErr.Timeout() {
-			return "网络连接超时"
-		}
-		if netErr.Temporary() {
-			return "网络临时错误"
-		}
-	}
-
-	opErr, ok := netErr.(*net.OpError)
-	if ok {
-
-		switch t := opErr.Err.(type) {
-		case *net.DNSError:
-			return "域名解析错误"
-		case *os.SyscallError:
-			if errno, ok := t.Err.(syscall.Errno); ok {
-				switch errno {
-				case syscall.ECONNREFUSED:
-					return fmt.Sprintf("连接被服务器拒绝")
-				case syscall.ETIMEDOUT:
-					return fmt.Sprintf("网络连接超时")
-				}
-			}
-		}
-	}
-
-	if strings.Contains(err.Error(), "forcibly closed") {
-		return "远程主机强行关闭了现有连接"
-	}
-
-	if strings.Contains(err.Error(), "because it doesn't contain any IP SANs") {
-		return "无法验证证书"
-	}
-
-	if strings.Contains(err.Error(), "no such host") {
-		return "无效域名"
-	}
-	if strings.Contains(err.Error(), "getaddrinfow") {
-		return "域名解析错误"
-	}
-
-	if strings.Contains(err.Error(), "closed network connection") {
-		return "使用已关闭的网络连接"
-	}
-
-	if strings.Contains(err.Error(), "connection refused") {
-		return "连接被拒绝"
-	}
-
-	if strings.Contains(err.Error(), "server gave HTTP response to HTTPS client") {
-		return "服务器需要https访问"
-	}
-
-	if strings.Contains(err.Error(), "x509: certificate is not valid") {
-		return "无效的网站证书"
-	}
-
-	if strings.Contains(err.Error(), "x509: certificate is valid") {
-		return "网站证书不匹配"
-	}
-
-	if strings.Contains(err.Error(), "actively refused it") {
-		return "无法建立连接"
-	}
-
-	if strings.Contains(err.Error(), "was forcibly closed by the remote host") {
-		return "远程主机强制关闭了现有连接"
-	}
-
-	return err.Error()
-}
-
 func (p *Pinger) logStats(stats *Stats) {
 	if stats.Duration < p.minDuration {
 		p.minDuration = stats.Duration
@@ -335,7 +231,7 @@ func (p *Pinger) logStats(stats *Stats) {
 
 	if stats.Error != nil {
 		_, _ = fmt.Fprintf(p.out, "Ping %s(%s) %s(%s) - time=%-10s dns=%-9s",
-			p.url.String(), stats.Address, status, p.formatError(stats.Error), stats.Duration.String(), stats.DNSDuration)
+			p.url.String(), stats.Address, status, FormatError(stats.Error), stats.Duration.String(), stats.DNSDuration)
 	} else {
 		_, _ = fmt.Fprintf(p.out, "Ping %s(%s) %s - time=%-10s dns=%-9s",
 			p.url.String(), stats.Address, status, stats.Duration.String(), stats.DNSDuration)
@@ -345,7 +241,7 @@ func (p *Pinger) logStats(stats *Stats) {
 	}
 	_, _ = fmt.Fprint(p.out, "\n")
 	if stats.Extra != nil {
-		_, _ = fmt.Fprintf(p.out, " %s\n", strings.TrimSpace(stats.Extra.String()))
+		_, _ = fmt.Fprintf(p.out, "%s\n", strings.TrimSpace(stats.Extra.String()))
 	}
 }
 

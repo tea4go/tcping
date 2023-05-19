@@ -152,7 +152,7 @@ func fixProxy(proxy string, op *ping.Option) error {
 }
 
 func init() {
-	version = "v0.1.2"
+	version = "v0.1.3"
 	rootCmd.Flags().StringVar(&httpMethod, "http-method", "GET", `在 http 模式下使用自定义 HTTP 方法而不是 GET。`)
 	ua := rootCmd.Flags().String("user-agent", "tcping", `在 http 模式下使用自定义 UA。`)
 	meta := rootCmd.Flags().Bool("meta", false, `带有元信息。`)

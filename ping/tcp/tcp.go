@@ -93,7 +93,7 @@ func (p *Ping) Ping(ctx context.Context) *ping.Stats {
 				notAfter:   state.PeerCertificates[0].NotAfter,
 			}
 		} else if p.tls {
-			stats.Extra = bytes.NewBufferString(fmt.Sprintf("TLS 握手失败, %s", tlsErr))
+			stats.Extra = bytes.NewBufferString("警告：此端口不是SSL/TLS协议，" + ping.FormatError(tlsErr) + "！")
 		}
 	}
 	return &stats
